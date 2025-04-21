@@ -1,22 +1,21 @@
-pay(Fname, Lname, Out):- salaried(Fname, Lname, Salary),
-	Out is Salary.
+use_module(facts).
 
-pay(Fname, Lname, Out):- hourly(Fname, Lname, Hours, Wages),
-	Hours > 50,
-	Tmp is Hours - 50, Out is 2 * Wages * Tmp + 1.5 * Wages * 10 + Wages * 40.
+pay(First, Last, Pay) :- (
+    salaried(First, Last, Pay)
+).
 
-pay(Fname, Lname, Out):- hourly(Fname, Lname, Hours, Wages),
-	Hours =< 50, Hours > 40,
-	Tmpp is Hours - 40, Out is 1.5 * Wages * Tmpp + Wages * 40.
+pay(First, Last, Pay) :- (
+    hourly(First, Last, Hours, Rate), Hours =< 40, Pay is Hours * Rate
+).
 
-pay(Fname, Lname, Out):- hourly(Fname, Lname, Hours, Wages),
-	Hours =< 40,
-	Out is Wages * Hours.
+pay(First, Last, Pay) :- (
+    hourly(First, Last, Hours, Rate), between(41, 50, Hours), Pay is (40 * Rate) + ((Hours - 40) * Rate * 1.5)
+).
 
-pay(Fname, Lname, Out):- commission(Fname, Lname, Min, Amount, Rate),
-	Amount * Rate > Min,
-	Out is Amount * Rate.
+pay(First, Last, Pay) :- (
+    hourly(First, Last, Hours, Rate), Hours > 50, Pay is (40 * Rate) + (10 * Rate * 1.5) + ((Hours - 50) * Rate * 2)
+).
 
-pay(Fname, Lname, Out):- commission(Fname, Lname, Min, Amount, Rate),
-	Amount * Rate =< Min,
-	Out is Min.
+pay(First, Last, Pay) :- (
+    commission(First, Last, Base, Sales, CommissionRate), Pay is max((Sales * CommissionRate), Base)
+).

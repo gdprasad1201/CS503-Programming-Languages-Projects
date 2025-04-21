@@ -1,65 +1,38 @@
-count(Op, Ref, Count):-(
-	Op=('=='), findall(Z, (pay(X, Y, Z), Z=:=Ref), List), length(List, Count);
-	Op=('!='), findall(Z, (pay(X, Y, Z), Z=\=Ref), List), length(List, Count);
-	Op=('>'), findall(Z, (pay(X, Y, Z), Z>Ref), List), length(List, Count);
-	Op=('>='), findall(Z, (pay(X, Y, Z), Z>=Ref), List), length(List, Count);
-	Op=('<'), findall(Z, (pay(X, Y, Z), Z<Ref), List), length(List, Count);
-	Op=('<='), findall(Z, (pay(X, Y, Z), Z=<Ref), List), length(List, Count)
-	).
+filter(X, '==', Y) :- X =:= Y.
+filter(X, '!=', Y) :- X =\= Y.
+filter(X, '>', Y) :- X > Y.
+filter(X, '>=', Y) :- X >= Y.
+filter(X, '<', Y) :- X < Y.
+filter(X, '<=', Y) :- X =< Y.
 
-min(Op, Ref, Min):-(
-	Op=('=='), findall(Z, (pay(X, Y, Z), Z=:=Ref), List), minList(List, Min);
-	Op=('!='), findall(Z, (pay(X, Y, Z), Z=\=Ref), List), minList(List, Min);
-	Op=('>'), findall(Z, (pay(X, Y, Z), Z>Ref), List), minList(List, Min);
-	Op=('>='), findall(Z, (pay(X, Y, Z), Z>=Ref), List), minList(List, Min);
-	Op=('<'), findall(Z, (pay(X, Y, Z), Z<Ref), List), minList(List, Min);
-	Op=('<='), findall(Z, (pay(X, Y, Z), Z=<Ref), List), minList(List, Min)
-	).
+% Check if Avg whether the average pay of the employees in the sublist. 
+avg(Op, Ref, Avg) :- (
+    total(Op, Ref, Sum), count(Op, Ref, Count), Avg is Sum / Count
+).
 
-max(Op, Ref, Max):-(
-	Op=('=='), findall(Z, (pay(X, Y, Z), Z=:=Ref), List), maxList(List, Max);
-	Op=('!='), findall(Z, (pay(X, Y, Z), Z=\=Ref), List), maxList(List, Max);
-	Op=('>'), findall(Z, (pay(X, Y, Z), Z>Ref), List), maxList(List, Max);
-	Op=('>='), findall(Z, (pay(X, Y, Z), Z>=Ref), List), maxList(List, Max);
-	Op=('<'), findall(Z, (pay(X, Y, Z), Z<Ref), List), maxList(List, Max);
-	Op=('<='), findall(Z, (pay(X, Y, Z), Z=<Ref), List), maxList(List, Max)
-	).
+% Check whether Count is the number of employees in the sublist.
+count(Op, Ref, Count) :- (
+    list(Op, Ref, List), length(List, Count)
+).
 
-avg(Op, Ref, Avg):-(
-	Op=('=='), findall(Z, (pay(X, Y, Z), Z=:=Ref), List), 
-		(length(List, Len), sumList(List, Sum), 
-		(Len > 0 -> Avg is Sum / Len; Avg is 0));
-	Op=('!='), findall(Z, (pay(X, Y, Z), Z=\=Ref), List),
-		(length(List, Len), sumList(List, Sum), 
-		(Len > 0 -> Avg is Sum / Len; Avg is 0));
-	Op=('>'), findall(Z, (pay(X, Y, Z), Z>Ref), List),
-		(length(List, Len), sumList(List, Sum), 
-		(Len > 0 -> Avg is Sum / Len; Avg is 0));
-	Op=('>='), findall(Z, (pay(X, Y, Z), Z>=Ref), List),
-		(length(List, Len), sumList(List, Sum), 
-		(Len > 0 -> Avg is Sum / Len; Avg is 0));
-	Op=('<'), findall(Z, (pay(X, Y, Z), Z<Ref), List),
-		(length(List, Len), sumList(List, Sum), 
-		(Len > 0 -> Avg is Sum / Len; Avg is 0));
-	Op=('<='), findall(Z, (pay(X, Y, Z), Z=<Ref), List),
-		(length(List, Len), sumList(List, Sum), 
-		(Len > 0 -> Avg is Sum / Len; Avg is 0))
-	).
+% Check whether List is the list of employees in the sublist.
+list(Op, Ref, List) :- (
+    % findall(Pay, (pay(First, Last, Pay), filter(Pay, Op, Ref)), List)
+    findall([First, Last, Pay], (pay(First, Last, Pay), filter(Pay, Op, Ref)), List)
+).
 
-total(Op, Ref, Total):-(
-	Op=('=='), findall(Z, (pay(X, Y, Z), Z=:=Ref), List), sumList(List, Total);
-	Op=('!='), findall(Z, (pay(X, Y, Z), Z=\=Ref), List), sumList(List, Total);
-	Op=('>'), findall(Z, (pay(X, Y, Z), Z>Ref), List), sumList(List, Total);
-	Op=('>='), findall(Z, (pay(X, Y, Z), Z>=Ref), List), sumList(List, Total);
-	Op=('<'), findall(Z, (pay(X, Y, Z), Z<Ref), List), sumList(List, Total);
-	Op=('<='), findall(Z, (pay(X, Y, Z), Z=<Ref), List), sumList(List, Total)
-	).
+% Check whether Max is the maximum pay of the employees in the sublist.
+max(Op, Ref, Max) :- (
+    findall(Pay, (pay(First, Last, Pay), filter(Pay, Op, Ref)), List), max_list(List, Max)
+).
 
-list(Op, Ref, List):-(
-	Op=('=='), findall([X, Y, Z], (pay(X, Y, Z), Z=:=Ref), List);
-	Op=('!='), findall([X, Y, Z], (pay(X, Y, Z), Z=\=Ref), List);
-	Op=('>'), findall([X, Y, Z], (pay(X, Y, Z), Z>Ref), List);
-	Op=('>='), findall([X, Y, Z], (pay(X, Y, Z), Z>=Ref), List);
-	Op=('<'), findall([X, Y, Z], (pay(X, Y, Z), Z<Ref), List);
-	Op=('<='), findall([X, Y, Z], (pay(X, Y, Z), Z=<Ref), List)
-	).
+% Check whether Min is the minimum pay of the employees in the sublist.
+min(Op, Ref, Min) :- (
+    (Pay, (pay(First, Last, Pay), filter(Pay, Op, Ref)), List), min_list(List, Min)
+).
+
+% Check whether Sum is the total pay of the employees in the sublist.
+% The sum of the list is the total pay of the employees in the sublist.
+total(Op, Ref, Sum) :- (
+    findall(Pay, (pay(First, Last, Pay), filter(Pay, Op, Ref)), List), sum_list(List, Sum)
+).
