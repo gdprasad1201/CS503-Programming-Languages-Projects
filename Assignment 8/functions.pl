@@ -28,7 +28,7 @@ max(Op, Ref, Max) :- (
 
 % Check whether Min is the minimum pay of the employees in the sublist.
 min(Op, Ref, Min) :- (
-    (Pay, (pay(First, Last, Pay), filter(Pay, Op, Ref)), List), min_list(List, Min)
+    findall(Pay, (pay(First, Last, Pay), filter(Pay, Op, Ref)), List), min_list(List, Min)
 ).
 
 % Check whether Sum is the total pay of the employees in the sublist.
